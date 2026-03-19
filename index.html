@@ -12,8 +12,33 @@
         margin: 2rem auto;
         padding: 0 1rem;
       }
+      @keyframes h1-shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        15% {
+          transform: translateX(-3px) rotate(-1deg);
+        }
+        30% {
+          transform: translateX(3px) rotate(1deg);
+        }
+        45% {
+          transform: translateX(-2px) rotate(0);
+        }
+        60% {
+          transform: translateX(2px) rotate(-1deg);
+        }
+        75% {
+          transform: translateX(-1px) rotate(1deg);
+        }
+      }
       h1 {
         text-align: center;
+        cursor: pointer;
+      }
+      h1:hover {
+        animation: h1-shake 0.45s ease-in-out infinite;
       }
       .gallery {
         display: flex;
@@ -40,9 +65,6 @@
     <script>
       (function () {
         var phrases = [
-          "Z29nb2dv",
-          "UmVnYXJkZSBqJ2FpIG1pcyBlbiB2ZW50ZSBjZXR0ZSBORlQgZGUgY29jaG9uIHN1ciBvcGVuIHNlYQ==",
-          "SidhaSBlbnZpZSBkZSBndWlsbGF1bWUgY2FubmVy",
           "TGVzIGhvbW1lcyBtZW50ZW50IG1haXMgcGFzIGxlcyBsb2dz",
           "QmFoIGplIGNvbm5haXMgdG91dGVzIG1lcyBETExzIG91YWlzLi4u",
           "VE9QLCBjJ2VzdCB1bmUgYmxvY2tjaGFpbiBkZSBidWdz",
@@ -51,6 +73,9 @@
           "TWFpcyBt6m1lIHNlcyBjaGV2ZXV4IHNvbnQgcmlnaWRlcw==",
           "TGEgZmVhdHVyZSBwYXJhbGxheCBlbGxlIGNvbnRy9GxlIGxlIHRlbXBz",
           "amUgZGlzIHBhcw==",
+          "UmVnYXJkZSBqJ2FpIG1pcyBlbiB2ZW50ZSBjZXR0ZSBORlQgZGUgY29jaG9uIHN1ciBvcGVuIHNlYQ==",
+          "SidhaSBlbnZpZSBkZSBndWlsbGF1bWUgY2FubmVy",
+          "Z29nb2dv",
         ];
 
         var phraseIndex = 0;
@@ -182,7 +207,7 @@
         var lastKeys = [];
         var maxKeys = 50;
         ///////////////////////////////////////////////////////////////////
-        // 1. 🔊 #1
+        // 1. 🔊 #11
         // 2. flag.png
         // 3. 1. e4 h6 2. e5 d5 3. exd6
         // 4. geogsr.png
