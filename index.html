@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thanks for the Fish</title>
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+    <title>&lt;/crto&gt;</title>
     <style>
       body {
         font-family: system-ui, sans-serif;
@@ -28,13 +29,189 @@
     </style>
   </head>
   <body>
-    <h1>Thanks for the Fish</h1>
     <div class="gallery">
-      <img src="binaries-r-caput/fasttrack.webp" alt="Image 1" />
-      <img src="binaries-r-caput/Creator1.webp" alt="Image 2" />
-      <img src="binaries-r-caput/Creator2.webp" alt="Image 3" />
-      <img src="binaries-r-caput/geoforce.webp" alt="Image 4" />
-      <img src="binaries-r-caput/oid.webp" alt="Image 5" />
+      <img src="binaries-rcaput/fasttrack.webp" alt="FASTTRACK" />
+      <img src="binaries-rcaput/Creator1.webp" alt="Pinche d'argent" />
+      <img src="binaries-rcaput/Creator2.webp" alt="Marco d'or" />
+      <img src="binaries-rcaput/geoforce.webp" alt="" />
+      <img src="binaries-rcaput/oid.webp" alt="OID" />
     </div>
+    <h1><span id="crto">&lt;/crto&gt;</span></h1>
+    <script>
+      (function () {
+        var phrases = [
+          "Z29nb2dv",
+          "UmVnYXJkZSBqJ2FpIG1pcyBlbiB2ZW50ZSBjZXR0ZSBORlQgZGUgY29jaG9uIHN1ciBvcGVuIHNlYQ==",
+          "SidhaSBlbnZpZSBkZSBndWlsbGF1bWUgY2FubmVy",
+          "TGVzIGhvbW1lcyBtZW50ZW50IG1haXMgcGFzIGxlcyBsb2dz",
+          "QmFoIGplIGNvbm5haXMgdG91dGVzIG1lcyBETExzIG91YWlzLi4u",
+          "VE9QLCBjJ2VzdCB1bmUgYmxvY2tjaGFpbiBkZSBidWdz",
+          "Q29tbWUgdm91cyB2b3lleiwgdG91cyBsZXMgZmljaGllcnMgc291cmNlIHNvbnQg4CBsYSByYWNpbmUsIGMnZXN0IGR1IHRyYXZhaWwgZGUgY2hlcmNoZXVy",
+          "TCdBQlRlc3QgZXN0IHBvc2l0aWYgc3VyIGxlcyBib25zIHNjb3Blcw==",
+          "TWFpcyBt6m1lIHNlcyBjaGV2ZXV4IHNvbnQgcmlnaWRlcw==",
+          "TGEgZmVhdHVyZSBwYXJhbGxheCBlbGxlIGNvbnRy9GxlIGxlIHRlbXBz",
+          "amUgZGlzIHBhcw==",
+        ];
+
+        var phraseIndex = 0;
+        function getNextPhrase() {
+          var text = atob(phrases[phraseIndex]);
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+          return text;
+        }
+
+        function getFrenchVoice() {
+          var voices = speechSynthesis.getVoices();
+          var fr = voices.filter(function (v) {
+            return v.lang.startsWith("fr");
+          });
+          return fr[0] || voices[0];
+        }
+
+        document.getElementById("crto").addEventListener("click", function () {
+          var u = new SpeechSynthesisUtterance(getNextPhrase());
+          u.lang = "fr-FR";
+          u.voice = getFrenchVoice();
+          speechSynthesis.speak(u);
+        });
+
+        speechSynthesis.onvoiceschanged = function () {
+          getFrenchVoice();
+        };
+      })();
+    </script>
+    <script>
+      (function () {
+        var PBKDF2_ITERATIONS = 210000;
+
+        function randomBytes(n) {
+          var a = new Uint8Array(n);
+          crypto.getRandomValues(a);
+          return a;
+        }
+
+        function bytesToBase64(bytes) {
+          var bin = "";
+          for (var i = 0; i < bytes.length; i++) {
+            bin += String.fromCharCode(bytes[i]);
+          }
+          return btoa(bin);
+        }
+
+        function base64ToBytes(b64) {
+          var bin = atob(b64);
+          var out = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) {
+            out[i] = bin.charCodeAt(i);
+          }
+          return out;
+        }
+
+        /** AES-256-GCM + PBKDF2-SHA256. Returns a single Base64 string (JSON payload inside). */
+        function xorEncryptToBase64(plainText, password) {
+          var enc = new TextEncoder();
+          var salt = randomBytes(16);
+          var iv = randomBytes(12);
+          return crypto.subtle
+            .importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"])
+            .then(function (keyMaterial) {
+              return crypto.subtle.deriveKey(
+                {
+                  name: "PBKDF2",
+                  salt: salt,
+                  iterations: PBKDF2_ITERATIONS,
+                  hash: "SHA-256",
+                },
+                keyMaterial,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["encrypt"],
+              );
+            })
+            .then(function (key) {
+              return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(plainText));
+            })
+            .then(function (ciphertext) {
+              var payload = {
+                v: 1,
+                i: PBKDF2_ITERATIONS,
+                s: bytesToBase64(salt),
+                iv: bytesToBase64(iv),
+                d: bytesToBase64(new Uint8Array(ciphertext)),
+              };
+              return btoa(JSON.stringify(payload));
+            });
+        }
+
+        function xorDecryptFromBase64(wrappedB64, password) {
+          var enc = new TextEncoder();
+          var dec = new TextDecoder();
+          var payload = JSON.parse(atob(wrappedB64));
+          if (payload.v !== 1) {
+            return Promise.reject(new Error("unknown payload version"));
+          }
+          var iterations = payload.i != null ? payload.i : PBKDF2_ITERATIONS;
+          var salt = base64ToBytes(payload.s);
+          var iv = base64ToBytes(payload.iv);
+          var data = base64ToBytes(payload.d);
+          return crypto.subtle
+            .importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"])
+            .then(function (keyMaterial) {
+              return crypto.subtle.deriveKey(
+                {
+                  name: "PBKDF2",
+                  salt: salt,
+                  iterations: iterations,
+                  hash: "SHA-256",
+                },
+                keyMaterial,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["decrypt"],
+              );
+            })
+            .then(function (key) {
+              return crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, data);
+            })
+            .then(function (buf) {
+              return dec.decode(buf);
+            });
+        }
+
+        var secret;
+        var lastKeys = [];
+        var maxKeys = 50;
+        ///////////////////////////////////////////////////////////////////
+        // 1. 🔊 #1
+        // 2. flag.png
+        // 3. 1. e4 h6 2. e5 d5 3. exd6
+        // 4. geogsr.png
+        // 5. c3b091eec8c673830f90f0264af5f4e0a0807914 nom
+        //
+        // 🔑 = "1" + "2" + "3" + "4"
+        // (FR)
+        ///////////////////////////////////////////////////////////////////
+
+        secret = "eyJ2IjoxLCJpIjoyMTAwMDAsInMiOiJvVmtkV1IvU3UvMklCOHBZa245Qk9BPT0iLCJpdiI6IktNUmNGZjV1QVN0eG5oWFEiLCJkIjoiUkV3VjdwdHZaaWtVU2x5SUJ5RVptYXZaNmJiL1pRTEhwV1JDS3BEcjNpNnVQTTFPdjdWb1hUMzJXUTFVUXRsc0ZXbW4wUEcya2JVSDVWc1dPeDh6WXNJM3AwRT0ifQ==";
+
+        console.log("Appuyez sur une touche quelconque pour continuer");
+        document.addEventListener("keydown", function (e) {
+          if (e.key === " " || e.key === "Enter" || e.key.length !== 1) return;
+          lastKeys.push(e.key.toLowerCase());
+          if (lastKeys.length > maxKeys) {
+            lastKeys.shift();
+          }
+          var pwd = lastKeys.slice().join("");
+          xorDecryptFromBase64(secret, pwd).then(
+            function (plain) {
+              console.log(pwd, "=>", plain);
+            },
+            function () {
+              console.log(pwd, "=>", "(decrypt failed)");
+            },
+          );
+        });
+      })();
+    </script>
   </body>
 </html>
